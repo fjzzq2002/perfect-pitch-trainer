@@ -33,6 +33,7 @@ code {
   text-align: left;
   padding: 15px;
   padding-top: 20px;
+  margin-bottom: 30px;
   display: flex;
   justify-content: space-between;
   /* place items at bottom */
@@ -45,7 +46,7 @@ ul li {
 
 .configcol {
   width: 250px;
-  padding: 30px 0px;
+  padding-bottom: 30px;
 }
 .config {
   display: flex;
