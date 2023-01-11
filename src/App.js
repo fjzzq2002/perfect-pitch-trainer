@@ -2,7 +2,7 @@ import Typography from '@mui/material/Typography';
 import HelpIcon from '@mui/icons-material/Help';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Button from '@mui/material/Button';
@@ -250,11 +250,15 @@ function Exercise() {
   const pitchToIndexCent=(pitch)=>{
     pitch/=C3;
     let index=0;
+    while(pitch<1) {
+      pitch*=semitone;
+      index--;
+    }
     while(pitch>=semitone) {
       pitch/=semitone;
       index++;
     }
-    console.log(pitch,semitone);
+    //console.log(pitch,semitone);
     return [index,Math.round(Math.log(pitch)*100/Math.log(semitone))];
   };
   const pitchToDesc=(pitch)=>{
@@ -263,17 +267,38 @@ function Exercise() {
   };
   const [testId,setTestId]=React.useState(1);
 
-  let curInfo = {type: 0, pitch: [
-    randomPitch()
-  ]};
+  const getNextExercise=(prevId)=>{
+    const testPitch=randomPitch();
+    const [index,cent]=pitchToIndexCent(testPitch);
+    const start=index-Math.floor(Math.random()*3);
+    return {
+      id: prevId+1, type: 0, pitch: testPitch, start: start, synth: gimmeSynthParam()
+    };
+  };
+  let g = localStorage.getItem('cur_exercise');
+  let curExercise;
+  if(g===null) {
+    curExercise=getNextExercise(0);
+    localStorage.setItem('cur_exercise',JSON.stringify(curExercise));
+  }
+  else {
+    curExercise=JSON.parse(g);
+  }
+  console.log(testId,curExercise);
+  if(testId!=curExercise.id)
+    setTestId(curExercise.id);
+  let h = localStorage.getItem('history_pitch');
+  if(h===null) h=[];
+  else h=JSON.parse(h);
 
   let curTest = <></>;
   let curTestStat = <></>;
 
-  if(curInfo.type==0) {
-    const testPitch=curInfo.pitch[0];
+  if(curExercise.type==0) {
+    const testPitch=curExercise.pitch;
     const [index,cent]=pitchToIndexCent(testPitch);
-    const start=index-Math.floor(Math.random()*3);
+    const start=curExercise.start;
+    console.log(start,curExercise,testPitch,index,cent);
 
     let answer=undefined;
     let answerX=undefined;
@@ -309,7 +334,6 @@ function Exercise() {
       var ctx = ele.getContext('2d');
       ctx.clearRect(0,0,ele.width,ele.height);
       ctx.strokeStyle = '#2D728F';
-      // make the stroke dashed
       ctx.lineWidth = 1;
       ctx.moveTo(105,0);
       ctx.lineTo(105,500);
@@ -331,6 +355,14 @@ function Exercise() {
       ele.innerText=pitchToDesc(g);
   //    console.log(ele);
     };
+    const playSound=(pitch)=>{
+      let synth = gimmeSynth(curExercise.synth);
+      synth.triggerAttackRelease(pitch, "8n");
+      setTimeout(()=>{synth.dispose();},500);
+    };
+    const playTestSound=()=>{
+      playSound(testPitch);
+    };
 
     const pitchTestSubmit=(e)=>{
       let ele = e.target;
@@ -338,25 +370,34 @@ function Exercise() {
       curX-=5;
       if(curX<0) curX=0;
       if(curX>300) curX=300;
+      const ths=indexToPitch(start)*semitone**(curX/100);
+      playSound(ths);
+      if(answer!==undefined) return;
       answerX=curX;
-      answer=indexToPitch(start)*semitone**(curX/100);
-      ele=ele.parentElement.parentElement.getElementsByClassName('disppr')[0];
+      answer=ths;
       const [index2,cent2]=pitchToIndexCent(answer);
       const delta=(index2*100+cent2)-(index*100+cent);
-      let report=`答案是 ${pitchToDesc(curInfo.pitch[0])}，你的回答`;
+      const dx=index*100+cent-start*100;
+      var ctx = ele.getContext('2d');
+      ctx.strokeStyle = 'green';
+      ctx.lineWidth = 1;
+      ctx.moveTo(dx+5,0);
+      ctx.lineTo(dx+5,500);
+      ctx.stroke();
+      ele=ele.parentElement.parentElement.getElementsByClassName('disppr')[0];
+      let report=`答案是 ${pitchToDesc(testPitch)}，你的回答`;
       if(delta===0) report+='完美无缺！';
       else if(delta>0) report+=`高了 ${delta} 音分。`;
       else report+=`低了 ${-delta} 音分。`;
-      ele.innerText=report;
+      ele.getElementsByTagName('div')[0].innerText=report;
+      ele.style.display='block';
+      let nextExercise=getNextExercise(curExercise.id);
+      localStorage.setItem('cur_exercise',JSON.stringify(nextExercise));
+      h.push(delta);
+      localStorage.setItem('history_pitch',JSON.stringify(h));
     };
     
 
-    const randomSynthParam = gimmeSynthParam();
-    const playTestSound=()=>{
-      let synth = gimmeSynth(randomSynthParam);
-      synth.triggerAttackRelease(testPitch, "8n");
-      setTimeout(()=>{synth.dispose();},500);
-    }
 
     //[index,index+3]
     curTest=(
@@ -377,23 +418,42 @@ function Exercise() {
         <div style={{paddingBottom:"5px"}} className="centss">&nbsp;</div>
         </Typography>
         </div>
-        <div className="disppr" style={{paddingTop:"20px"}}>
-          &nbsp;
+        <div className="disppr" style={{paddingTop:"20px",display:"none"}}>
+        <div style={{paddingBottom:"10px"}}>123</div>
+        <Button variant="outlined" size="medium" onClick={()=>playSound(testPitch)}>播放正确答案</Button>
+        <Button variant="outlined" size="medium" onClick={()=>playSound(answer)}>播放你选择的音</Button>
+        <Button variant="outlined" color="success" disableElevation size="medium" onClick={(e)=>{
+          setTestId(curExercise.id+1);
+          const par=e.target.parentElement;
+          par.style.display='none';
+          const cv = par.parentElement.getElementsByTagName('canvas')[0];
+          const ctx=cv.getContext('2d');
+          ctx.clearRect(0,0,310,50);
+          const cs = par.parentElement.getElementsByClassName('centss')[0];
+          cs.innerHTML='&nbsp';
+        }}>→下一题</Button>
         </div>
       </div>
     );
     curTestStat=(
       <div>
-        该练习平均误差：0.30 半音&nbsp;&nbsp;
-        <Link underline="none" style={{cursor:"pointer"}}>重置</Link>
+        该练习平均误差：{(h.length)?(
+          (h.map(x=>Math.abs(x)).reduce((a,b)=>a+b,0)/h.length).toFixed(2)
+        +' 音分 ('+h.length+')'):'无历史记录'}&nbsp;&nbsp;
+        <Link underline="none" style={{cursor:"pointer"}}
+        onClick={()=>{
+          if(!window.confirm("确认重置"+h.length+"条该练习历史记录？")) return;
+          localStorage.setItem('history_pitch',JSON.stringify([]));
+        }}
+        >重置</Link>
       </div>
     );
   }
 
   const actualTest=(
     <>
-    <div style={{display:"flex",justifyContent:"space-between"}}>
-      <div>
+    <div style={{display:"flex",justifyContent:"space-between",margin:"0px 15px"}}>
+      <div style={{paddingBottom:"5px"}}>
     #{testId}</div>
     <div>
       {curTestStat}
