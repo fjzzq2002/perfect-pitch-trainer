@@ -1,7 +1,7 @@
 {
   "name": "perfect-pitch-trainer",
   "version": "0.1.0",
-  "homepage": "./",
+  "homepage": "/perfect-pitch-trainer",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.10.5",
