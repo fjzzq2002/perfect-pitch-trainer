@@ -119,7 +119,7 @@ window.giveYouUp=giveYouUp;
 window.stopGiveup=0;
 
 function Exercise() {
-  const [phase, setPhase] = React.useState(0);
+  const [phase, setPhase] = React.useState(2);
   const [exercises, setExercises] = React.useState(() => ['pitch','interval','chord']);
   const [timelimit, setTimelimit] = React.useState("");
   const [octaves, setOctaves] = React.useState(()=>['3','4','5','6']);
