@@ -452,7 +452,7 @@ function Exercise() {
 
   const actualTest=(
     <>
-    <div style={{display:"flex",justifyContent:"space-between",margin:"0px 15px"}}>
+    <div style={{display:"flex",justifyContent:"space-between"}}>
       <div style={{paddingBottom:"5px"}}>
     #{testId}</div>
     <div>
@@ -471,8 +471,10 @@ function App() {
   return (
     <div className="App">
       <div className="container">
+      <div style={{margin:"0px 15px"}}>
         <Header />
         <Exercise />
+      </div>
       </div>
     </div>
   );

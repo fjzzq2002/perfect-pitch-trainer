@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/perfect-pitch-trainer/static/css/main.614a9ddd.css",
-    "main.js": "/perfect-pitch-trainer/static/js/main.df249efc.js",
+    "main.js": "/perfect-pitch-trainer/static/js/main.a30b2299.js",
     "static/media/roboto-all-500-normal.woff": "/perfect-pitch-trainer/static/media/roboto-all-500-normal.0ab669b7a0d19b178f57.woff",
     "static/media/roboto-all-700-normal.woff": "/perfect-pitch-trainer/static/media/roboto-all-700-normal.a457fde362a540fcadff.woff",
     "static/media/roboto-all-400-normal.woff": "/perfect-pitch-trainer/static/media/roboto-all-400-normal.c5d001fa922fa66a147f.woff",
@@ -36,10 +36,10 @@
     "static/media/roboto-greek-ext-700-normal.woff2": "/perfect-pitch-trainer/static/media/roboto-greek-ext-700-normal.bd9854c751441ccc1a70.woff2",
     "index.html": "/perfect-pitch-trainer/index.html",
     "main.614a9ddd.css.map": "/perfect-pitch-trainer/static/css/main.614a9ddd.css.map",
-    "main.df249efc.js.map": "/perfect-pitch-trainer/static/js/main.df249efc.js.map"
+    "main.a30b2299.js.map": "/perfect-pitch-trainer/static/js/main.a30b2299.js.map"
   },
   "entrypoints": [
     "static/css/main.614a9ddd.css",
-    "static/js/main.df249efc.js"
+    "static/js/main.a30b2299.js"
   ]
 }
