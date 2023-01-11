@@ -239,8 +239,9 @@ function Exercise() {
   const randomPitch=()=>Math.exp(Math.random()*(Math.log(pitchMax)-Math.log(pitchMin))+Math.log(pitchMin));
   console.log(pitchMin,pitchMax,randomPitch());
   const indexToName=(index)=>{
-    const h=index%12;
+    let h=index%12;
     const g=Math.floor(index/12);
+    if(h<0) h+=12;
     const names=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
     return names[h]+(g+3);
   };
