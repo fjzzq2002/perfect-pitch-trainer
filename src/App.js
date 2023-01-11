@@ -90,7 +90,7 @@ function Exercise() {
   const handleTimelimit = (
     event, newLimit
   ) => {
-    if (newLimit === null) newLimit = "";
+    if (newLimit === null) return;
     setTimelimit(newLimit);
   };
 
