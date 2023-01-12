@@ -45,7 +45,8 @@ ul li {
 }
 
 .configcol {
-  width: 230px;
+  width: max-content;
+  padding: 0 30px;
   padding-bottom: 30px;
 }
 .config {

@@ -66,7 +66,7 @@ function Header() {
   )
 }
 
-const gimmeSynthParam = () => {
+const gimmeSynthParam = (lengtht="") => {
   const synthType = () => {
     const base = ['sine','square','triangle','sawtooth'];
     let comp = Math.floor(Math.random()*10)*2+4;
@@ -80,7 +80,7 @@ const gimmeSynthParam = () => {
       attack: 0.01,
       decay: 0.4,
       release: 0.3,
-      sustain: 0
+      sustain: (lengtht=="")?0:0.8
     },
     modulation: {
       type: synthType()
@@ -128,6 +128,7 @@ function Exercise() {
   const [phase, setPhase] = React.useState(0);
   const [exercises, setExercises] = React.useState(() => ['pitch','intervalc','intervald','chord']);
   const [timelimit, setTimelimit] = React.useState("");
+  const [lengtht, setLengtht] = React.useState("");
   const [replay, setReplay] = React.useState("");
   const [octaves, setOctaves] = React.useState(()=>['3','4','5','6']);
   // console.log(octaves,exercises);
@@ -167,7 +168,14 @@ function Exercise() {
   ) => {
     if (newReplay === null) return;
     setReplay(newReplay);
-  }
+  };
+
+  const handleLengtht = (
+    event, newLengtht
+  ) => {
+    if(newLengtht === null) return;
+    setLengtht(newLengtht);
+  };
 
   const config=(
     <>
@@ -203,6 +211,18 @@ function Exercise() {
     >
       <ToggleButton value="">禁止</ToggleButton>
       <ToggleButton value="1">允许</ToggleButton>
+    </ToggleButtonGroup>
+    </div>
+    <div className="configcol">
+      <Typography variant="subtitle1">音符长度</Typography>
+    <ToggleButtonGroup
+      color="primary"
+      value={lengtht}
+      onChange={handleLengtht}
+      exclusive
+    >
+      <ToggleButton value="">短音</ToggleButton>
+      <ToggleButton value="1">长音</ToggleButton>
     </ToggleButtonGroup>
     </div>
     {
@@ -343,7 +363,7 @@ function Exercise() {
       const [index,cent]=pitchToIndexCent(testPitch);
       const start=index-Math.floor(Math.random()*3);
       return {
-        id: prevId+1, type: 'pitch', pitch: testPitch, start: start, synth: gimmeSynthParam()
+        id: prevId+1, type: 'pitch', pitch: testPitch, start: start, synth: gimmeSynthParam(lengtht)
       };
     }
     if(type=='intervalc') {
@@ -351,7 +371,7 @@ function Exercise() {
       const basePitch=randomPitch();
       const nextPitch=basePitch*(semitone**(Math.random()*4-2));
       return {
-        id: prevId+1, type: 'intervalc', pitch: [basePitch, nextPitch], synth: gimmeSynthParam()
+        id: prevId+1, type: 'intervalc', pitch: [basePitch, nextPitch], synth: gimmeSynthParam(lengtht)
       };
     }
     if(type=='intervald') {
@@ -365,7 +385,7 @@ function Exercise() {
         break;
       }
       return {
-        id: prevId+1, type: 'intervald', pitch: [basePitch, nextPitch], diff: diff, synth: gimmeSynthParam()
+        id: prevId+1, type: 'intervald', pitch: [basePitch, nextPitch], diff: diff, synth: gimmeSynthParam(lengtht)
       };
     }
     if(type=='chord') {
@@ -390,12 +410,7 @@ function Exercise() {
         if(Math.min(...pitches)<pitchMin||Math.max(...pitches)>pitchMax) continue;
         break;
       }
-      let synthParam;
-      while(1) {
-        synthParam=gimmeSynthParam();
-        // if(synthParam.oscillator.type!='square')
-        break;
-      }
+      let synthParam=gimmeSynthParam(lengtht);
       // console.log(synthParam.oscillator.type,synthParam.modulation.type);
       return {
         id: prevId+1, type: 'chord', pitch: pitches, bass: bassPitch, chord: chosenType, synth: synthParam
