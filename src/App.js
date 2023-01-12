@@ -1,6 +1,5 @@
 import Typography from '@mui/material/Typography';
 import HelpIcon from '@mui/icons-material/Help';
-import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import React, { useState, useEffect } from 'react';
 import ToggleButton from '@mui/material/ToggleButton';
@@ -129,6 +128,7 @@ function Exercise() {
   const [phase, setPhase] = React.useState(0);
   const [exercises, setExercises] = React.useState(() => ['pitch','intervalc','intervald','chord']);
   const [timelimit, setTimelimit] = React.useState("");
+  const [replay, setReplay] = React.useState("");
   const [octaves, setOctaves] = React.useState(()=>['3','4','5','6']);
   // console.log(octaves,exercises);
   const handleExercises = (
@@ -162,6 +162,13 @@ function Exercise() {
     setTimelimit(newLimit);
   };
 
+  const handleReplay = (
+    event, newReplay
+  ) => {
+    if (newReplay === null) return;
+    setReplay(newReplay);
+  }
+
   const config=(
     <>
     <div className="config">
@@ -184,6 +191,18 @@ function Exercise() {
       <ToggleButton value="chord">
         和弦
       </ToggleButton>
+    </ToggleButtonGroup>
+    </div>
+    <div className="configcol">
+      <Typography variant="subtitle1">重新播放</Typography>
+    <ToggleButtonGroup
+      color="primary"
+      value={replay}
+      onChange={handleReplay}
+      exclusive
+    >
+      <ToggleButton value="">禁止</ToggleButton>
+      <ToggleButton value="1">允许</ToggleButton>
     </ToggleButtonGroup>
     </div>
     {
@@ -295,7 +314,7 @@ function Exercise() {
     // ['sus4',[0,5,7]],
   ];
   let chordTypes=[];
-  let found=new Object();
+  let found={};
   for(const [symbol,pit] of chordTypesNoInv) {
     // console.log(symbol,pit);
     for(let i=0;i<pit.length;++i) {
@@ -471,7 +490,14 @@ function Exercise() {
       ele.innerText=pitchToDesc(g);
   //    console.log(ele);
     };
-    const playTestSound=()=>{
+    let played=false;
+
+    const playTestSound=(e)=>{
+      if(played&&answer===undefined) {
+        alert('重播已被禁用');
+        return;
+      }
+      if(replay=="") played=true;
       playSound(testPitch);
     };
 
@@ -629,7 +655,14 @@ function Exercise() {
       ele.innerText=desc;
   //    console.log(ele);
     };
+    let played=false;
+
     const playTestSound=()=>{
+      if(played&&answer===undefined) {
+        alert('重播已被禁用');
+        return;
+      }
+      if(replay=="") played=true;
       let synth = gimmeSynth(curExercise.synth);
       synth.triggerAttackRelease(basePitch, "8n");
       setTimeout(()=>{
@@ -734,7 +767,16 @@ function Exercise() {
     else h=JSON.parse(h);
     const [basePitch,nextPitch]=curExercise.pitch;
     const diff=curExercise.diff;
+    let played=false;
+    let answerX=undefined;
+    let answer=undefined;
+
     const playTestSound=()=>{
+      if(played&&answer===undefined) {
+        alert('重播已被禁用');
+        return;
+      }
+      if(replay=="") played=true;
       let synth = gimmeSynth(curExercise.synth);
       // const synthp = new Tone.PolySynth(Tone.FMSynth,curExercise.synth).toDestination();
       synth.triggerAttackRelease(basePitch, "8n");
@@ -744,8 +786,6 @@ function Exercise() {
       },600);
     };
 
-    let answerX=undefined;
-    let answer=undefined;
 
     const submitIntervalD=(t)=>{
       let ths=t.getAttribute('val')*1.;
@@ -889,13 +929,20 @@ function Exercise() {
       setTimeout(()=>{synth.dispose();},1000);
     };
 
-    const playTestSound=()=>{
-      playChord(bass,chord[1]);
-    };
-
+    let played=false;
     let answerX=undefined;
     let answer=undefined;
     let clks=new Map();
+
+    const playTestSound=()=>{
+      if(played&&answer===undefined) {
+        alert('重播已被禁用');
+        return;
+      }
+      if(replay=="") played=true;
+      playChord(bass,chord[1]);
+    };
+
 
     const extractType=(t)=>{
       let u=t.innerText;
@@ -918,7 +965,7 @@ function Exercise() {
       playChord(root,trSemi);
       //playSound(basePitch*semitone**ths);
       if(answerX!==undefined) return;
-      answerX=ths;
+      answerX=ths; answer=ths;
       const [actual,trans]=chord[0].split('-');
       if(answerX==actual) {
         t.classList.add('button_green');
@@ -947,7 +994,6 @@ function Exercise() {
       }
       if(answerX==actual) report+='，正确。';
       else report+='，错误。';
-      console.log(answer,report);
       let ele=t.parentElement.parentElement.parentElement.parentElement.getElementsByClassName('disppr')[0];
       console.log(ele,t,t.parentElement.parentElement.parentElement);
       ele.getElementsByTagName('div')[0].innerText=report;
@@ -969,8 +1015,7 @@ function Exercise() {
         <p>给出给定的和弦类型</p>
         <Button variant="outlined" size="medium" onClick={playTestSound}>播放</Button>
         <div style={{paddingTop:"30px",margin:"auto",width:"max-content",textAlign:"left",lineHeight:"30px"}} className="itvdiv">
-        <div style={{margin:"0 auto"}}
-          style={{display:(chord[0].indexOf('7')==-1)?'block':'none'}}>
+        <div style={{margin:"0 auto",display:(chord[0].indexOf('7')==-1)?'block':'none'}}>
           <ButtonGroup color="primary" size="medium" onClick={(e)=>{submitChord(e.target);}} className="chordbut">
             <Button>减三和弦 / dim</Button>
             <Button>小三和弦 / m</Button>
@@ -979,8 +1024,7 @@ function Exercise() {
             <Button>挂留和弦 / sus</Button>
           </ButtonGroup>
         </div>
-        <div style={{margin:"0 auto"}}
-          style={{display:(chord[0].indexOf('7')!=-1)?'block':'none'}}>
+        <div style={{margin:"0 auto",display:(chord[0].indexOf('7')!=-1)?'block':'none'}}>
           <ButtonGroup color="primary" size="medium" onClick={(e)=>{submitChord(e.target);}} className="chordbut">
             <Button>减七和弦 / dim7</Button>
             <Button>半减七和弦 / ø7</Button>
