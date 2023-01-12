@@ -45,10 +45,34 @@ ul li {
 }
 
 .configcol {
-  width: 250px;
+  width: 230px;
   padding-bottom: 30px;
 }
 .config {
   display: flex;
   justify-content: center;
+}
+
+.itvdiv > div {
+  padding: 4px 0px;
+}
+
+.button_green {
+  color: green !important;
+}
+.button_brown {
+  color: brown !important;
+}
+
+.chordbut > button {
+  text-transform: none !important;
+}
+
+.thetitle {
+  cursor: pointer;
+}
+
+/* hover */
+.thetitle:hover {
+  color: rgb(50,50,50);
 }
