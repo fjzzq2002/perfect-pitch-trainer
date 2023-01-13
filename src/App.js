@@ -325,8 +325,10 @@ function Exercise() {
     ['aug',[0,4,8]],
     ['dim',[0,3,6]],
     ['7',[0,4,7,10]],
-    ['aug7',[0,4,8,11]],
+    // ['augM7',[0,4,8,11]],
+    // ['aug7',[0,4,8,10]],
     ['M7',[0,4,7,11]],
+    ['mM7',[0,3,7,11]],
     ['m7',[0,3,7,10]],
     ['ø7',[0,3,6,10]],
     ['dim7',[0,3,6,9]],
@@ -340,8 +342,8 @@ function Exercise() {
     for(let i=0;i<pit.length;++i) {
       const pits=[];
       for(let j=0;j<pit.length;++j) pits.push((pit[(i+j)%pit.length]-pit[i]+12)%12);
-      if(i!=0&&(symbol.indexOf('7')!=-1))
-         continue;
+      // if(i!=0&&(symbol.indexOf('7')!=-1))
+      //    continue;
       if(i==1&&(symbol.indexOf('sus')!=-1))
         continue;
       const pitseq=pits.join(',');
@@ -402,7 +404,12 @@ function Exercise() {
       // const pitchMin1=C3*(2**(octMin1-3));
       // const pitchMax1=C3*(2**(octMax1-2));
       // limited to 4th and 5th octave, otherwise too hard
-      let chosenType=chordTypes[Math.floor(Math.random()*chordTypes.length)];
+      let chosenType=null;
+      while(1) {
+        chosenType=chordTypes[Math.floor(Math.random()*chordTypes.length)];
+        // if(chosenType[0].indexOf('dim')==-1) continue;
+        break;
+      }
       let pitches,bassPitch;
       while(1) {
         bassPitch=randomPitch();
@@ -965,6 +972,8 @@ function Exercise() {
       return u;
     };
 
+    let disableInv=0;
+
     const submitChord=(t)=>{
       let ths=extractType(t);
       const semi=getChordSemitones(ths);
@@ -972,6 +981,7 @@ function Exercise() {
       if(!clks.has(ths)) clks.set(ths,-1);
       let curTr=(clks.get(ths)+1)%semi.length;
       clks.set(ths,curTr);
+      if(disableInv) curTr=0;
       if(curTr==0) curTr+=semi.length;
       const trSemi=[];
       for(let i=curTr;i<semi.length;i++) trSemi.push(semi[i]-12);
@@ -1030,7 +1040,7 @@ function Exercise() {
         <p>给出给定的和弦类型</p>
         <Button variant="outlined" size="medium" onClick={playTestSound}>播放</Button>
         <div style={{paddingTop:"30px",margin:"auto",width:"max-content",textAlign:"left",lineHeight:"30px"}} className="itvdiv">
-        <div style={{margin:"0 auto",display:(chord[0].indexOf('7')==-1)?'block':'none'}}>
+        <div style={{margin:"0 auto",display:(1)?'block':'none'}}>
           <ButtonGroup color="primary" size="medium" onClick={(e)=>{submitChord(e.target);}} className="chordbut">
             <Button>减三和弦 / dim</Button>
             <Button>小三和弦 / m</Button>
@@ -1039,21 +1049,23 @@ function Exercise() {
             <Button>挂留和弦 / sus</Button>
           </ButtonGroup>
         </div>
-        <div style={{margin:"0 auto",display:(chord[0].indexOf('7')!=-1)?'block':'none'}}>
+        <div style={{margin:"0 auto",display:(1)?'block':'none'}}>
           <ButtonGroup color="primary" size="medium" onClick={(e)=>{submitChord(e.target);}} className="chordbut">
             <Button>减七和弦 / dim7</Button>
             <Button>半减七和弦 / ø7</Button>
             <Button>小七和弦 / m7</Button>
             <Button>属七和弦 / 7</Button>
+            <Button>小大七和弦 / mM7</Button>
             <Button>大七和弦 / M7</Button>
-            <Button>增七和弦 / aug7</Button>
           </ButtonGroup>
         </div>
         </div>
         <div className="disppr" style={{paddingTop:"20px",display:"none"}}>
         <div style={{paddingBottom:"10px"}}>123</div>
+        <Button variant="outlined" color="warning" size="medium" onClick={()=>{disableInv=1;}}>只听原位和弦</Button>
         <Button variant="outlined" color="success" disableElevation size="medium" onClick={(e)=>{
           setTestId(curExercise.id+1);
+          disableInv=0;
           const par=e.target.parentElement;
           par.style.display='none';
           for(const col of ['button_green','button_brown'])

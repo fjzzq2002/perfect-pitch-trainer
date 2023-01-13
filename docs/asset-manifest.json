@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/pitch-trainer/static/css/main.e877cae5.css",
-    "main.js": "/pitch-trainer/static/js/main.3dc0ed98.js",
+    "main.js": "/pitch-trainer/static/js/main.afed9d01.js",
     "static/media/roboto-all-500-normal.woff": "/pitch-trainer/static/media/roboto-all-500-normal.0ab669b7a0d19b178f57.woff",
     "static/media/roboto-all-700-normal.woff": "/pitch-trainer/static/media/roboto-all-700-normal.a457fde362a540fcadff.woff",
     "static/media/roboto-all-400-normal.woff": "/pitch-trainer/static/media/roboto-all-400-normal.c5d001fa922fa66a147f.woff",
@@ -36,10 +36,10 @@
     "static/media/roboto-greek-ext-700-normal.woff2": "/pitch-trainer/static/media/roboto-greek-ext-700-normal.bd9854c751441ccc1a70.woff2",
     "index.html": "/pitch-trainer/index.html",
     "main.e877cae5.css.map": "/pitch-trainer/static/css/main.e877cae5.css.map",
-    "main.3dc0ed98.js.map": "/pitch-trainer/static/js/main.3dc0ed98.js.map"
+    "main.afed9d01.js.map": "/pitch-trainer/static/js/main.afed9d01.js.map"
   },
   "entrypoints": [
     "static/css/main.e877cae5.css",
-    "static/js/main.3dc0ed98.js"
+    "static/js/main.afed9d01.js"
   ]
 }
